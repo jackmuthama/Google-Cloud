@@ -1,0 +1,99 @@
+Deploying to Kubernetes v1.6
+
+The new goal of this lab is to get you ready for scaling and managing containers in production.
+
+1. Define your zone as a project default zone
+gcloud config set compute/zone us-central1-a
+
+2. Get the sample code for creating and running containers and deployments
+git clone https://github.com/googlecodelabs/orchestrate-with-kubernetes.git
+
+3. Start your Kubernetes cluster with 5 nodes
+cd orchestrate-with-kubernetes/kubernetes
+
+4. Start a Kubernetes cluster called bootcamp that runs 5 nodes
+ gcloud container clusters create bootcamp --num-nodes 5 --scopes "https://www.googleapis.com/auth/projecthosting,storage-rw"
+
+5. Create a Deployment
+cat deployments/auth.yaml
+
+6. Create the deployment object using kubectl create
+
+7. Verify that it was created
+kubectl get deployments
+
+8. View the pods created
+kubectl get pods
+
+9.Create the auth service
+kubectl create -f services/auth.yaml
+
+10.Create and expose the hello and frontend deployments
+kubectl create -f deployments/hello.yaml
+kubectl create -f services/hello.yaml
+kubectl create configmap nginx-frontend-conf --from-file=nginx/frontend.conf
+kubectl create secret generic tls-certs --from-file tls/
+kubectl create -f deployments/frontend.yaml
+
+10.Interact with the frontend
+- Get its external IP.
+kubectl get services frontend
+
+And curl the service
+
+11.Scale a Deployment
+Update the spec.replicas field to scale the deployment
+kubectl explain deployment.spec.replicas
+
+12.Update the replicas field most easily using the kubectl scale command
+kubectl scale deployment hello --replicas=5
+
+13.Verify there are 5 pods running.
+kubectl get pods | grep hello- | wc -l
+
+14.Scale back the application.
+kubectl scale deployment hello --replicas=3
+
+15.Verify the correct number of pods.
+kubectl get pods | grep hello- | wc -l
+
+16.Rolling Updates
+- update your deployment.
+kubectl edit deployment hello
+
+17. Change the image in containers section to the following, then save and exit.
+
+containers:
+- name: hello
+  image: kelseyhightower/hello:2.0.0
+  
+18. You can see the new ReplicaSet that Kubernetes creates.
+kubectl get replicaset
+
+19. Pause a Rolling Update
+kubectl rollout pause deployment/hello
+
+20. Verify the current state of the rollout.
+kubectl rollout status deployment/hello
+
+21.Verify this with the pods.
+kubectl get pods -o jsonpath --template='{range .items[*]}{.metadata.name}{"\t"}{"\t"}{.spec.containers[0].image}{"\n"}{end}'
+
+22.Resume a Rolling Update
+kubectl rollout resume deployment/hello
+
+23.Run the status command to verify the rollout is complete.
+kubectl rollout status deployment/hello
+
+24.Rollback an Update
+kubectl rollout undo deployment/hello
+
+25.Verify the rollback in the deployment's history.
+kubectl rollout history deployment/hello
+
+26.Verify all pods have rolled back to the previous version.
+kubectl get pods -o jsonpath --template='{range .items[*]}{.metadata.name}{"\t"}{"\t"}{.spec.containers[0].image}{"\n"}{end}'
+
+27.Create a Canary Deployment
+cat deployments/hello-canary.yaml
+

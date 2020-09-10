@@ -1,0 +1,39 @@
+Getting Started with Compute Engine
+
+Objectives
+In this lab, you will learn how to perform the following tasks:
+
+Create a Compute Engine virtual machine using the Google Cloud Platform (GCP) Console.
+
+Create a Compute Engine virtual machine using the gcloud command-line interface.
+
+Connect between the two instances.
+
+1.Create an Instance page, for Name, type my-vm-1
+2.For Region and Zone, select the region and zone assigned by Qwiklabs.
+3.For Machine type, accept the default.
+4.For Boot disk, if the Image shown is not Debian GNU/Linux 9 (stretch), click Change and select Debian GNU/Linux 9 (stretch).
+5.Leave the defaults for Identity and API access unmodified.
+6.For Firewall, click Allow HTTP traffic.
+gcloud compute instances create my-vm-1 --zone us-central1-c --image-family debian-9 --image-project debian-cloud
+
+7.Create a virtual machine using the gcloud command line
+-Choose a zone from that list other than the zone to which Qwiklabs assigned you
+gcloud config set compute/zone us-central1-b 
+
+8.Create a VM instance called my-vm-2
+gcloud compute instances create "my-vm-2" \
+--machine-type "n1-standard-1" \
+--image-project "debian-cloud" \
+--image "debian-9-stretch-v20190213" \
+--subnet "default"
+
+9.Connect between the two instances
+Use the ping command to confirm that my-vm-2 can reach my-vm-1 over the network
+- Connect to my-vm-2
+  gcloud compute ssh my-vm-2
+-Ping my-vm-1 from my-vm-2
+ - ping -c 4 my-vm-1
+-Use the ssh command to open a command prompt on my-vm-1 from my-vm-2
+ ssh my-vm-1
+
